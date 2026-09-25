@@ -1,0 +1,184 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+ 
+}
+
+enum Attendance {
+  COMING
+  NOT_COMING
+  MAYBE
+  PENDING
+}
+
+enum OccasionType {
+  WEDDING
+  HENNA
+  NIKAH
+  ENGAGEMENT
+  BIRTHDAY
+  NEW_BABY
+}
+
+enum PackageTier {
+  BASIC
+  COMPLETE
+  ROYAL
+}
+
+enum MusicSource {
+  UPLOAD
+  YOUTUBE
+}
+
+enum PhotoRole {
+  COUPLE
+  VENUE
+  BACKGROUND
+  MEMORY
+}
+
+model Customer {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  whatsapp    String?
+  countryCode String?
+  createdAt   DateTime @default(now())
+
+  invitations Invitation[]
+}
+
+model Invitation {
+  id     String @id @default(cuid())
+  slug   String @unique
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  controlTokenHash String @unique
+  templateKey      String
+  packageTier      PackageTier @default(BASIC)
+  occasionType     OccasionType @default(WEDDING)
+  language         String @default("ar")
+
+  groomName        String
+  brideName        String
+  nameOrder        String  @default("groom-top")
+  tagline          String?
+  weddingDate      DateTime
+  weddingTime      String?
+  invitationText   String?
+  duaText          String?
+  showSaveDateCard Boolean @default(true)
+
+  groomFamilyLabel String?
+  groomFamilyNames String?
+  brideFamilyLabel String?
+  brideFamilyNames String?
+
+  venueName    String
+  venueCity    String?
+  venueAddress String?
+
+  closingText       String?
+  contactButtonText String?
+  contactName       String?
+  contactWhatsapp   String?
+  hashtag String?
+  dressCodeIntro  String?
+  dressCodeForHer String?
+  dressCodeForHim String?
+  rsvpDeadline      DateTime?
+  adultsOnlyEnabled Boolean   @default(false)
+  monogramLetters     String?
+  monogramStyle       String?
+  monogramColor       String?
+  monogramSize        String?
+  monogramShowAtStart Boolean @default(false)
+
+  musicSource MusicSource?
+  musicUrl    String?
+
+  autoScrollIntro        Boolean @default(false)
+  rsvpEnabled            Boolean @default(false)
+  qrCheckInEnabled       Boolean @default(false)
+  guestPhotoAlbumEnabled Boolean @default(false)
+  colorSchemeOverride    String?
+  fontOverride           String?
+
+  isPublished Boolean  @default(false)
+  expiresAt   DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  guests       Guest[]
+  photos       InvitationPhoto[]
+  programItems ProgramItem[]
+  notes        Note[]
+  storyMilestones StoryMilestone[]
+}
+
+model ProgramItem {
+  id           String     @id @default(cuid())
+  invitationId String
+  invitation   Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+
+  time  String
+  title String
+  order Int    @default(0)
+}
+
+model Note {
+  id           String     @id @default(cuid())
+  invitationId String
+  invitation   Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+
+  text       String
+  isFeatured Boolean @default(false)
+  order      Int     @default(0)
+}
+
+model Guest {
+  id           String     @id @default(cuid())
+  invitationId String
+  invitation   Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+
+  name       String
+  attendance Attendance @default(PENDING)
+  companions Int        @default(0)
+  message    String?
+
+  guestSlug String? @unique
+  headcount Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InvitationPhoto {
+  id           String     @id @default(cuid())
+  invitationId String
+  invitation   Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+
+  url      String
+  role     PhotoRole @default(MEMORY)
+  position Int       @default(0)
+
+  createdAt DateTime @default(now())
+}
+model StoryMilestone {
+  id           String     @id @default(cuid())
+  invitationId String
+  invitation   Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+
+  year        String
+  title       String
+  description String?
+  order       Int      @default(0)
+}
