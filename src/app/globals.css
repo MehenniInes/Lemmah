@@ -57,7 +57,7 @@ a:focus-visible, summary:focus-visible, button:focus-visible {
 }
 
 /* ── Your six fonts, per language ──────────────────── */
-.lang-ar { --ff-display: var(--font-aref), serif;     --ff-body: var(--font-ibm), sans-serif; }
+.lang-ar { --ff-display: var(--font-aref), serif;     --ff-body: var(--font-cairo), sans-serif; }
 .lang-fr { --ff-display: var(--font-monsieur), cursive; --ff-body: var(--font-jost), sans-serif; }
 .lang-en { --ff-display: var(--font-playfair), serif; --ff-body: var(--font-inter), sans-serif; }
 .font-display { font-family: var(--ff-display); }

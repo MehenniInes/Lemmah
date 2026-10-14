@@ -3,41 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import RsvpForm from "./RsvpForm";
-
-/* =========================================================
-   TYPES
-   ========================================================= */
-
-type InvitationData = {
-  brideName: string;
-  groomName: string;
-  weddingDate: Date;
-  weddingTime?: string | null;
-  venue: string;
-  address?: string | null;
-  message?: string | null;
-  programItems: { id: string; time: string; title: string }[];
-  storyMilestones: { id: string; year: string; title: string; description: string | null }[];
-  notes: { id: string; text: string; isFeatured: boolean }[];
-  venueCity?: string | null;
-  venueAddress?: string | null;
-  dressCodeIntro?: string | null;
-  dressCodeForHer?: string | null;
-  dressCodeForHim?: string | null;
-  duaText?: string | null;
-  groomFamilyLabel?: string | null;
-  groomFamilyNames?: string | null;
-  brideFamilyLabel?: string | null;
-  brideFamilyNames?: string | null;
-  closingText?: string | null;
-  contactButtonText?: string | null;
-  contactName?: string | null;
-  contactWhatsapp?: string | null;
-  adultsOnlyEnabled: boolean;
-  id: string;
-  guests: { id: string; name: string; attendance: string; companions: number; message: string | null }[];
-  photos: { id: string; url: string; role: string; position: number }[];
-};
+import type { InvitationData } from "@/lib/invitation";
 
 /* =========================================================
    PALETTE  (pink / cream / champagne)
@@ -334,7 +300,7 @@ function Opening({
     day: "numeric",
     month: "long",
     year: "numeric",
-  }).format(new Date(invitation.weddingDate));
+  }).format(new Date(invitation.eventDate));
 
   return (
     <section
@@ -523,7 +489,7 @@ export default function ElegantTemplate({ invitation }: { invitation: Invitation
 
   useEffect(() => {
     const update = () => {
-      const diff = new Date(invitation.weddingDate).getTime() - Date.now();
+      const diff = new Date(invitation.eventDate).getTime() - Date.now();
       if (diff <= 0) {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
         return;
@@ -538,21 +504,21 @@ export default function ElegantTemplate({ invitation }: { invitation: Invitation
     update();
     const interval = window.setInterval(update, 1000);
     return () => window.clearInterval(interval);
-  }, [invitation.weddingDate]);
+  }, [invitation.eventDate]);
 
   const formattedDate = new Intl.DateTimeFormat("en-GB", {
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
-  }).format(new Date(invitation.weddingDate));
+  }).format(new Date(invitation.eventDate));
 
   const mapsQuery = [invitation.venue, invitation.venueCity, invitation.venueAddress, invitation.address]
     .filter(Boolean)
     .join(", ");
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery)}`;
 
-  const start = new Date(invitation.weddingDate);
+  const start = new Date(invitation.eventDate);
   const end = new Date(start.getTime() + 4 * 60 * 60 * 1000);
   const toGCalFormat = (d: Date) => d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
   const calendarUrl =
@@ -563,7 +529,7 @@ export default function ElegantTemplate({ invitation }: { invitation: Invitation
 
   const couplePhoto = invitation.photos.find((p) => p.role === "COUPLE");
   const memoryPhotos = invitation.photos.filter((p) => p.role === "MEMORY").sort((a, b) => a.position - b.position);
-  const wishes = invitation.guests.filter((g) => g.message);
+  const wishes = invitation.wishes;
 
   const gallery = useMemo(() => {
     const all = [couplePhoto, ...memoryPhotos].filter(Boolean) as typeof invitation.photos;
@@ -1016,9 +982,9 @@ export default function ElegantTemplate({ invitation }: { invitation: Invitation
                 <div className="mx-auto max-w-3xl">
                   <SectionTitle eyebrow="From our loved ones" title="Warm Wishes" />
                   <div className="grid gap-4 sm:grid-cols-2">
-                    {wishes.map((guest) => (
+                    {wishes.map((wish) => (
                       <motion.div
-                        key={guest.id}
+                        key={wish.id}
                         initial={{ opacity: 0, y: 12 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
@@ -1026,10 +992,10 @@ export default function ElegantTemplate({ invitation }: { invitation: Invitation
                         style={{ border: `1px solid ${C.gold}40`, background: C.cream }}
                       >
                         <p className="font-display text-lg" style={{ color: C.rose }}>
-                          {guest.name}
+                          {wish.name}
                         </p>
                         <p className="mt-3 text-sm italic leading-7" style={{ color: C.inkSoft }}>
-                          &ldquo;{guest.message}&rdquo;
+                          &ldquo;{wish.message}&rdquo;
                         </p>
                       </motion.div>
                     ))}

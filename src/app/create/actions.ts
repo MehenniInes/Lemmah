@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import cloudinary from "@/lib/cloudinary";
 import crypto from "crypto";
 import { redirect } from "next/navigation";
+import { computeExpiry } from "@/lib/expiry";
 
 function slugify(text: string) {
   return text
@@ -126,21 +127,23 @@ export async function createInvitation(formData: FormData) {
   const baseSlug = slugify(`${brideName || "bride"}-${groomName || "groom"}`);
   const slug = `${baseSlug}-${crypto.randomBytes(2).toString("hex")}`;
 
-  const controlToken = crypto.randomBytes(24).toString("hex");
-  const controlTokenHash = crypto.createHash("sha256").update(controlToken).digest("hex");
+  const manageToken = crypto.randomBytes(24).toString("hex");
+  const manageTokenHash = crypto.createHash("sha256").update(manageToken).digest("hex");
 
-  const expiresAt = new Date();
-  expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+   const eventDateValue = weddingDate
+    ? new Date(weddingDate)
+    : new Date(new Date().setFullYear(new Date().getFullYear() + 1));
+  const { publicExpiry: expiresAt } = computeExpiry(eventDateValue);
 
   const invitation = await prisma.invitation.create({
     data: {
       slug,
       customerId: customer.id,
-      controlTokenHash,
+      manageTokenHash,
       templateKey: "elegant",
       groomName: groomName || "TBD",
       brideName: brideName || "TBD",
-      weddingDate: weddingDate ? new Date(weddingDate) : new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+      eventDate: eventDateValue,
       weddingTime: weddingTime || null,
       venueName: venueName || "TBD",
       venueCity: venueCity || null,
@@ -154,7 +157,7 @@ export async function createInvitation(formData: FormData) {
       dressCodeForHer: dressCodeForHer || null,
       dressCodeForHim: dressCodeForHim || null,
       adultsOnlyEnabled,
-      isPublished: false,
+      status: "DRAFT",
       expiresAt,
       programItems: { create: programLines },
       notes: { create: noteLines },

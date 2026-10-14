@@ -2,6 +2,7 @@ import "dotenv/config";
 import { createHash } from "node:crypto";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
+import { computeExpiry } from "../src/lib/expiry";
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
@@ -32,7 +33,7 @@ async function main() {
   const plainControlToken = "demo-ctrl-0000-1111-2222";
   const slug = "sara-ahmed";
   const weddingDate = new Date("2027-08-15T19:00:00+01:00");
-  const expiresAt = new Date(weddingDate.getTime() + 7 * 86400_000);
+    const { publicExpiry: expiresAt } = computeExpiry(weddingDate);
 
   // ─── Invitation ──────────────────────────────────────────
   const existing = await prisma.invitation.findUnique({ where: { slug } });
@@ -41,8 +42,9 @@ async function main() {
     ? existing
     : await prisma.invitation.create({
         data: {
-          slug,
-          controlTokenHash: hashToken(plainControlToken),
+            slug,
+          manageTokenHash: hashToken(plainControlToken),
+          
           customerId: customer.id,
 
           templateKey: "elegant",
@@ -54,7 +56,7 @@ async function main() {
           brideName: "سارة",
           nameOrder: "groom-top",
           tagline: "يد تمتد... ويد تجيب",
-          weddingDate,
+          eventDate: weddingDate,
           weddingTime: "19:00",
           invitationText:
             "بكل فرح وسرور، نتشرف بدعوتكم لحضور حفل زفافنا.",
@@ -74,7 +76,8 @@ async function main() {
           autoScrollIntro: false,
           showSaveDateCard: true,
 
-          isPublished: true,
+         status: "PUBLISHED",
+publishedAt: new Date(),
           expiresAt,
 
           programItems: {

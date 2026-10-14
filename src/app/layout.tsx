@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import {
   Aref_Ruqaa,
-  IBM_Plex_Sans_Arabic,
+  Cairo,
   Inter,
   Jost,
   Monsieur_La_Doulaise,
@@ -17,10 +17,10 @@ const arefRuqaa = Aref_Ruqaa({
   display: "swap",
 });
 
-const ibmPlexArabic = IBM_Plex_Sans_Arabic({
-  subsets: ["arabic"],
-  weight: ["300", "400", "500", "600"],
-  variable: "--font-ibm",
+const cairo = Cairo({
+  subsets: ["arabic", "latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-cairo",
   display: "swap",
 });
 
@@ -71,6 +71,13 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#D4AF37",
+};
+
 // ─── Layout ────────────────────────────────────────────────
 export default function RootLayout({
   children,
@@ -83,7 +90,7 @@ export default function RootLayout({
       dir="rtl"
       className={[
         arefRuqaa.variable,
-        ibmPlexArabic.variable,
+        cairo.variable,
         inter.variable,
         jost.variable,
         monsieur.variable,

@@ -17,7 +17,10 @@ async function publishInvitation(formData: FormData) {
 
   await prisma.invitation.update({
     where: { id: invitationId },
-    data: { isPublished: true },
+    data: {
+      status: "PUBLISHED",
+      publishedAt: new Date(),
+    },
   });
 
   revalidatePath("/admin/orders");
@@ -35,13 +38,13 @@ export default async function AdminOrdersPage({
   }
 
   const pending = await prisma.invitation.findMany({
-    where: { isPublished: false },
+    where: { status: "DRAFT" },
     include: { customer: true },
     orderBy: { createdAt: "desc" },
   });
 
   const live = await prisma.invitation.findMany({
-    where: { isPublished: true },
+    where: { status: "PUBLISHED" },
     include: { customer: true },
     orderBy: { createdAt: "desc" },
     take: 20,
@@ -95,7 +98,7 @@ export default async function AdminOrdersPage({
                   type="submit"
                   className="bg-[#6e2a3d] text-[#f6efe6] px-4 py-2 rounded-full text-sm"
                 >
-                  Mark Paid & Publish
+                  Mark Paid &amp; Publish
                 </button>
               </form>
             </div>

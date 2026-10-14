@@ -5,9 +5,9 @@ generator client {
 
 datasource db {
   provider = "postgresql"
- 
 }
 
+// ─── Existing enums ───────────────────────────────────────
 enum Attendance {
   COMING
   NOT_COMING
@@ -42,6 +42,20 @@ enum PhotoRole {
   MEMORY
 }
 
+// ─── Phase 1 enums ────────────────────────────────────────
+enum InvitationStatus {
+  DRAFT
+  PUBLISHED
+  EXPIRED
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  CANCELLED
+}
+
+// ─── Customer ─────────────────────────────────────────────
 model Customer {
   id          String   @id @default(cuid())
   name        String
@@ -51,26 +65,59 @@ model Customer {
   createdAt   DateTime @default(now())
 
   invitations Invitation[]
+  orders      Order[]
 }
 
+// ─── Order (new in Phase 1) ───────────────────────────────
+model Order {
+  id  String @id @default(cuid())
+  ref String @unique // human-readable, e.g. "LM-4F2K"
+
+  templateKey  String
+  packageTier  PackageTier  @default(BASIC)
+  occasionType OccasionType @default(WEDDING)
+  status       OrderStatus  @default(PENDING_PAYMENT)
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id])
+
+  editCodeHash   String?   @unique
+  editCodeUsedAt DateTime?
+
+  draftData Json?
+
+  publishesRemaining Int @default(3)
+
+  invitationId String?     @unique
+  invitation   Invitation? @relation(fields: [invitationId], references: [id])
+
+  createdAt DateTime  @default(now())
+  paidAt    DateTime?
+}
+
+// ─── Invitation ───────────────────────────────────────────
 model Invitation {
-  id     String @id @default(cuid())
-  slug   String @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   customerId String
   customer   Customer @relation(fields: [customerId], references: [id])
 
-  controlTokenHash String @unique
-  templateKey      String
-  packageTier      PackageTier @default(BASIC)
-  occasionType     OccasionType @default(WEDDING)
-  language         String @default("ar")
+  order Order?
+
+  // renamed from controlTokenHash (Phase 1)
+  manageTokenHash String @unique
+
+  templateKey  String
+  packageTier  PackageTier  @default(BASIC)
+  occasionType OccasionType @default(WEDDING)
+  language     String       @default("ar")
 
   groomName        String
   brideName        String
   nameOrder        String  @default("groom-top")
   tagline          String?
-  weddingDate      DateTime
+  eventDate        DateTime   // renamed from weddingDate (Phase 1)
   weddingTime      String?
   invitationText   String?
   duaText          String?
@@ -89,12 +136,13 @@ model Invitation {
   contactButtonText String?
   contactName       String?
   contactWhatsapp   String?
-  hashtag String?
-  dressCodeIntro  String?
-  dressCodeForHer String?
-  dressCodeForHim String?
+  hashtag           String?
+  dressCodeIntro    String?
+  dressCodeForHer   String?
+  dressCodeForHim   String?
   rsvpDeadline      DateTime?
-  adultsOnlyEnabled Boolean   @default(false)
+  adultsOnlyEnabled Boolean  @default(false)
+
   monogramLetters     String?
   monogramStyle       String?
   monogramColor       String?
@@ -111,19 +159,23 @@ model Invitation {
   colorSchemeOverride    String?
   fontOverride           String?
 
-  isPublished Boolean  @default(false)
-  expiresAt   DateTime
+  // replaces isPublished (Phase 1)
+  status      InvitationStatus @default(DRAFT)
+  publishedAt DateTime?
+
+  expiresAt DateTime
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  guests       Guest[]
-  photos       InvitationPhoto[]
-  programItems ProgramItem[]
-  notes        Note[]
+  guests          Guest[]
+  photos          InvitationPhoto[]
+  programItems    ProgramItem[]
+  notes           Note[]
   storyMilestones StoryMilestone[]
 }
 
+// ─── Sub-models ───────────────────────────────────────────
 model ProgramItem {
   id           String     @id @default(cuid())
   invitationId String
@@ -157,6 +209,8 @@ model Guest {
   guestSlug String? @unique
   headcount Int?
 
+  isHidden Boolean @default(false) // new in Phase 1
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -172,6 +226,7 @@ model InvitationPhoto {
 
   createdAt DateTime @default(now())
 }
+
 model StoryMilestone {
   id           String     @id @default(cuid())
   invitationId String
