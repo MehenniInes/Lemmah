@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import cloudinary from "@/lib/cloudinary";
 import crypto from "crypto";
 import { redirect } from "next/navigation";
 
@@ -10,12 +11,31 @@ function slugify(text: string) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 }
+
 function normalizeAlgerianWhatsapp(raw: string): string | null {
   const cleaned = raw.replace(/[\s-]/g, "").replace(/^\+/, "");
-  // Accepts: 213555123456, 0555123456, or bare 555123456 — Algerian mobile prefixes are 5, 6, 7
   const match = cleaned.match(/^(?:213|0)?([567]\d{8})$/);
   if (!match) return null;
-  return "213" + match[1]; // stored/used in international format, no + (what wa.me needs)
+  return "213" + match[1];
+}
+
+async function uploadToCloudinary(file: File, folder: string): Promise<string | null> {
+  if (!file || file.size === 0) return null;
+
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
+
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader
+      .upload_stream({ folder: `lemmah/${folder}` }, (error, result) => {
+        if (error || !result) {
+          reject(error);
+          return;
+        }
+        resolve(result.secure_url);
+      })
+      .end(buffer);
+  });
 }
 
 export async function createInvitation(formData: FormData) {
@@ -31,12 +51,6 @@ export async function createInvitation(formData: FormData) {
   const closingText = formData.get("closingText") as string;
   const contactName = formData.get("contactName") as string;
   const contactWhatsapp = formData.get("contactWhatsapp") as string;
-    const normalizedContactWhatsapp = contactWhatsapp
-    ? normalizeAlgerianWhatsapp(contactWhatsapp)
-    : null;
-  if (contactWhatsapp && !normalizedContactWhatsapp) {
-    throw new Error("Please enter a valid Algerian WhatsApp number for the RSVP contact");
-  } 
   const dressCodeIntro = formData.get("dressCodeIntro") as string;
   const dressCodeForHer = formData.get("dressCodeForHer") as string;
   const dressCodeForHim = formData.get("dressCodeForHim") as string;
@@ -45,10 +59,23 @@ export async function createInvitation(formData: FormData) {
   const customerName = formData.get("customerName") as string;
   const customerEmail = formData.get("customerEmail") as string;
   const customerWhatsapp = formData.get("customerWhatsapp") as string;
- const normalizedCustomerWhatsapp = normalizeAlgerianWhatsapp(customerWhatsapp);
+
+  const normalizedCustomerWhatsapp = normalizeAlgerianWhatsapp(customerWhatsapp);
   if (!normalizedCustomerWhatsapp) {
     throw new Error("Please enter a valid Algerian WhatsApp number (e.g. 0555123456)");
   }
+
+  const normalizedContactWhatsapp = contactWhatsapp
+    ? normalizeAlgerianWhatsapp(contactWhatsapp)
+    : null;
+  if (contactWhatsapp && !normalizedContactWhatsapp) {
+    throw new Error("Please enter a valid Algerian WhatsApp number for the RSVP contact");
+  }
+
+  if (!customerName || !customerEmail || !normalizedCustomerWhatsapp) {
+    throw new Error("Missing required fields");
+  }
+
   const programRaw = (formData.get("programItems") as string) || "";
   const programLines = programRaw
     .split("\n")
@@ -76,15 +103,27 @@ export async function createInvitation(formData: FormData) {
       return { year: year || "", title: title || "", description: description || null, order: i };
     });
 
-   if (!customerName || !customerEmail || !normalizedCustomerWhatsapp) {
-    throw new Error("Missing required fields");
+  // Upload images — couple photo (single) and memory gallery (multiple)
+  const couplePhotoFile = formData.get("couplePhoto") as File;
+  const couplePhotoUrl = await uploadToCloudinary(couplePhotoFile, "couple");
+
+  const memoryFiles = formData.getAll("memoryPhotos") as File[];
+  const memoryUrls: string[] = [];
+  for (const file of memoryFiles) {
+    const url = await uploadToCloudinary(file, "memories");
+    if (url) memoryUrls.push(url);
   }
 
-   const customer = await prisma.customer.create({
+  const photoRecords = [
+    ...(couplePhotoUrl ? [{ url: couplePhotoUrl, role: "COUPLE" as const, position: 0 }] : []),
+    ...memoryUrls.map((url, i) => ({ url, role: "MEMORY" as const, position: i })),
+  ];
+
+  const customer = await prisma.customer.create({
     data: { name: customerName, email: customerEmail, whatsapp: normalizedCustomerWhatsapp },
   });
 
-  const baseSlug = slugify(`${brideName}-${groomName}`);
+  const baseSlug = slugify(`${brideName || "bride"}-${groomName || "groom"}`);
   const slug = `${baseSlug}-${crypto.randomBytes(2).toString("hex")}`;
 
   const controlToken = crypto.randomBytes(24).toString("hex");
@@ -99,11 +138,11 @@ export async function createInvitation(formData: FormData) {
       customerId: customer.id,
       controlTokenHash,
       templateKey: "elegant",
-      groomName: groomName || "groom",
-      brideName: brideName || "bride",
+      groomName: groomName || "TBD",
+      brideName: brideName || "TBD",
       weddingDate: weddingDate ? new Date(weddingDate) : new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
       weddingTime: weddingTime || null,
-      venueName: venueName || "venue",
+      venueName: venueName || "TBD",
       venueCity: venueCity || null,
       venueAddress: venueAddress || null,
       invitationText: invitationText || null,
@@ -120,6 +159,7 @@ export async function createInvitation(formData: FormData) {
       programItems: { create: programLines },
       notes: { create: noteLines },
       storyMilestones: { create: storyLines },
+      photos: { create: photoRecords },
     },
   });
 

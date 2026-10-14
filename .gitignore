@@ -41,3 +41,11 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# Explicitly un-ignore the example file
+!.env.example
+
+# Local AI assistant skill folders — kept on disk, never committed
+.agents/
+.claude/
+.windsurf/

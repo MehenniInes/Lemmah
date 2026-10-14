@@ -9,8 +9,8 @@ export default function RsvpForm({ invitationId }: { invitationId: string }) {
 
   if (submitted) {
     return (
-      <div className="mt-4 text-sm text-[#6e2a3d]">
-        Thank you — your response has been recorded.
+      <div className="p-3 bg-[#E7E2CE]/20 rounded-xl text-xs font-semibold text-[#E7E2CE] font-sans text-center">
+        Thank you! Your response has been recorded.
       </div>
     );
   }
@@ -23,46 +23,62 @@ export default function RsvpForm({ invitationId }: { invitationId: string }) {
         setPending(false);
         setSubmitted(true);
       }}
-      className="mt-4 w-full text-left text-sm"
+      className="w-full text-left font-sans space-y-3"
     >
-      <input type="hidden" name="invitationId" value={invitationId} />
-
-      <div className="mb-2">
-        <label className="block text-xs text-[#5a5670] mb-1">Your name</label>
-        <input name="name" required className="w-full border border-[#e0d5c3] rounded px-2 py-1" />
+      <div className="text-[10px] uppercase tracking-[0.25em] text-[#BEB7A7] text-center mb-3">
+        Kindly Respond
       </div>
 
-      <div className="mb-2">
-        <label className="block text-xs text-[#5a5670] mb-1">Will you attend?</label>
-        <select name="attendance" required className="w-full border border-[#e0d5c3] rounded px-2 py-1">
-          <option value="COMING">Yes, I&apos;ll be there</option>
-          <option value="MAYBE">Maybe</option>
-          <option value="NOT_COMING">No, I can&apos;t make it</option>
+      <input type="hidden" name="invitationId" value={invitationId} />
+
+      <div>
+        <label className="block text-[11px] font-medium text-[#BEB7A7] mb-1">Your Full Name</label>
+        <input
+          name="name"
+          required
+          className="w-full bg-[#0B1530]/80 border border-[#BEB7A7]/40 rounded-xl px-3 py-2 text-xs text-[#F5F4F0] focus:outline-none focus:border-[#E7E2CE]"
+        />
+      </div>
+
+      <div>
+        <label className="block text-[11px] font-medium text-[#BEB7A7] mb-1">Will you attend?</label>
+        <select
+          name="attendance"
+          required
+          className="w-full bg-[#0B1530]/80 border border-[#BEB7A7]/40 rounded-xl px-3 py-2 text-xs text-[#F5F4F0] focus:outline-none focus:border-[#E7E2CE]"
+        >
+          <option value="COMING" className="bg-[#112250]">Joyfully Accept</option>
+          <option value="MAYBE" className="bg-[#112250]">Tentative</option>
+          <option value="NOT_COMING" className="bg-[#112250]">Regretfully Decline</option>
         </select>
       </div>
 
-      <div className="mb-2">
-        <label className="block text-xs text-[#5a5670] mb-1">Number of companions</label>
+      <div>
+        <label className="block text-[11px] font-medium text-[#BEB7A7] mb-1">Number of Companions</label>
         <input
           type="number"
           name="companions"
           min={0}
           defaultValue={0}
-          className="w-full border border-[#e0d5c3] rounded px-2 py-1"
+          className="w-full bg-[#0B1530]/80 border border-[#BEB7A7]/40 rounded-xl px-3 py-2 text-xs text-[#F5F4F0] focus:outline-none focus:border-[#E7E2CE]"
         />
       </div>
 
-      <div className="mb-2">
-        <label className="block text-xs text-[#5a5670] mb-1">Message (optional)</label>
-        <textarea name="message" rows={2} className="w-full border border-[#e0d5c3] rounded px-2 py-1" />
+      <div>
+        <label className="block text-[11px] font-medium text-[#BEB7A7] mb-1">Message for the Couple</label>
+        <textarea
+          name="message"
+          rows={2}
+          className="w-full bg-[#0B1530]/80 border border-[#BEB7A7]/40 rounded-xl px-3 py-2 text-xs text-[#F5F4F0] focus:outline-none focus:border-[#E7E2CE]"
+        />
       </div>
 
       <button
         type="submit"
         disabled={pending}
-        className="mt-1 bg-[#6e2a3d] text-[#f6efe6] px-4 py-2 rounded-full text-sm disabled:opacity-50"
+        className="w-full bg-gradient-to-r from-[#BEB7A7] via-[#E7E2CE] to-[#BEB7A7] text-[#112250] py-2.5 rounded-full text-xs font-bold tracking-wider uppercase hover:brightness-110 transition-all disabled:opacity-50"
       >
-        {pending ? "Sending..." : "Confirm attendance"}
+        {pending ? "Sending..." : "Confirm RSVP"}
       </button>
     </form>
   );

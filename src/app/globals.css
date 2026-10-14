@@ -1,26 +1,100 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* ── Blush + Gold palette (from your mockup) ─────── */
+  --color-bg:          #FFF7F9;
+  --color-bg-soft:     #FDF0F4;
+  --color-surface:     #FFFFFF;
+  --color-text:        #231F20;
+  --color-text-soft:   #6b5b66;
+
+  --color-pink:        #FBCFE8;
+  --color-pink-soft:   #FCE7F0;
+  --color-pink-deep:   #9A7B1C;   /* used as accent text on pink */
+
+  --color-gold:        #D4AF37;
+  --color-gold-light:  #F3E5AB;
+  --color-gold-bright: #DFB841;
+  --color-gold-dark:   #9A7B1C;
+
+  --color-lilac:       #b9a5e8;
+  --color-mint:        #7fcfa8;
+
+  --color-wedding:     #d48cb8;
+  --color-engagement:  #f4a3c0;
+  --color-henna:       #e08a6e;
+  --color-birthday:    #f4b56e;
+  --color-baby:        #a8d4b0;
+  --color-business:    #9fb0d4;
+  --color-eid:         #7fcfa8;
+
+  --shadow-soft: 0 10px 30px -12px rgba(212, 175, 55, 0.18);
+  --shadow-lift: 0 18px 40px -18px rgba(212, 175, 55, 0.35);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@custom-variant rtl (&:where([dir="rtl"], [dir="rtl"] *));
+@custom-variant ltr (&:where([dir="ltr"], [dir="ltr"] *));
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  background-image:
+    radial-gradient(circle at 5% 5%,  rgba(212, 175, 55, 0.05) 0%, transparent 25%),
+    radial-gradient(circle at 95% 95%, rgba(252, 231, 240, 0.6) 0%, transparent 35%),
+    radial-gradient(circle at 50% 50%, #FFFFFF 0%, #FFF7F9 100%);
+  color: var(--color-text);
+  font-family: var(--ff-body), system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+a:focus-visible, summary:focus-visible, button:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+  border-radius: 999px;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ── Your six fonts, per language ──────────────────── */
+.lang-ar { --ff-display: var(--font-aref), serif;     --ff-body: var(--font-ibm), sans-serif; }
+.lang-fr { --ff-display: var(--font-monsieur), cursive; --ff-body: var(--font-jost), sans-serif; }
+.lang-en { --ff-display: var(--font-playfair), serif; --ff-body: var(--font-inter), sans-serif; }
+.font-display { font-family: var(--ff-display); }
+.font-body    { font-family: var(--ff-body); }
+.lang-en .font-display { font-style: italic; }
+.lang-ar .font-display { line-height: 1.6; }
+
+/* ── Glass card (from your mockup) ────────────────── */
+.glass-card {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(212, 175, 55, 0.35);
 }
+
+/* ── Pink-gold button (from your mockup) ──────────── */
+.pink-gold-btn {
+  background: linear-gradient(135deg, #FCE7F0 0%, #FBCFE8 100%);
+  border: 1.5px solid #D4AF37;
+  color: #231F20;
+  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.18);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.pink-gold-btn:hover {
+  background: linear-gradient(135deg, #FBCFE8 0%, #F9A8D4 100%);
+  border-color: #DFB841;
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.35);
+  transform: translateY(-2px);
+}
+
+/* ── Pulse gold ──────────────────────────────────── */
+@keyframes pulseGoldRing {
+  0%   { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.6); }
+  70%  { box-shadow: 0 0 0 16px rgba(212, 175, 55, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+}
+.pulse-gold { animation: pulseGoldRing 2.2s infinite; }
+
+::-webkit-scrollbar { width: 7px; }
+::-webkit-scrollbar-track { background: #FFF7F9; }
+::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 4px; }

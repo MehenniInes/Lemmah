@@ -3,7 +3,7 @@ import { createInvitation } from "./actions";
 export default function CreatePage() {
   return (
     <div className="min-h-screen bg-[#1c1b29] text-[#f6efe6] px-4 py-10">
-      <form action={createInvitation} className="max-w-lg mx-auto space-y-4">
+      <form action={createInvitation} encType="multipart/form-data" className="max-w-lg mx-auto space-y-4">
         <h1 className="text-2xl mb-4">Create Your Invitation</h1>
         <p className="text-xs text-[#f6efe6]/50">Fields marked * are required</p>
 
@@ -29,6 +29,15 @@ export default function CreatePage() {
         <input name="venueName" placeholder="Venue name" className="w-full p-2 rounded text-black" />
         <input name="venueCity" placeholder="City" className="w-full p-2 rounded text-black" />
         <input name="venueAddress" placeholder="Address" className="w-full p-2 rounded text-black" />
+                <h2 className="text-sm uppercase tracking-widest text-[#c6a15b] mt-6">Photos</h2>
+        <div>
+          <label className="block text-xs text-[#f6efe6]/60 mb-1">Couple photo</label>
+          <input type="file" name="couplePhoto" accept="image/*" className="w-full text-sm" />
+        </div>
+        <div>
+          <label className="block text-xs text-[#f6efe6]/60 mb-1">Memory gallery (select multiple)</label>
+          <input type="file" name="memoryPhotos" accept="image/*" multiple className="w-full text-sm" />
+        </div>
 
         <h2 className="text-sm uppercase tracking-widest text-[#c6a15b] mt-6">Words</h2>
         <textarea
