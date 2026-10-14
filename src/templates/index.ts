@@ -44,62 +44,68 @@ const elegantDemoData: InvitationData = {
   language: "ar",
   occasionType: "WEDDING",
 
-  brideName: "Sara",
-  groomName: "Ahmed",
+  brideName: "سارة",
+  groomName: "أحمد",
   nameOrder: "groom-top",
-  tagline: null,
+  tagline: "يد تمتد... ويد تجيب",
 
-  eventDate: new Date("2027-08-15"),
-  weddingTime: "7:00 PM",
+  eventDate: new Date("2027-08-15T19:00:00+01:00"),
+  weddingTime: "19:00",
 
-  message: "With hearts full of joy, we invite you to our wedding celebration.",
+  message: "بكل فرح وسرور، نتشرف بدعوتكم لحضور حفل زفافنا.",
   duaText:
-    "وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا",
-  closingText: "Your presence opens the doors of our happiness",
+    "وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً",
+  closingText: "حضوركم يفتح أبواب فرحنا",
 
-  venue: "Salle El Djazair",
-  venueCity: "Algiers",
-  venueAddress: "Hydra",
-  address: "Hydra",
+  venue: "قاعة الجزائر",
+  venueCity: "الجزائر",
+  venueAddress: "حيدرة، الجزائر العاصمة",
+  address: "حيدرة، الجزائر العاصمة",
 
-  dressCodeIntro: "Algiers elegance",
-  dressCodeForHer:
-    "Traditional Algerian karakou or elegant evening wear are welcome.",
-  dressCodeForHim: "Formal suit or traditional attire.",
+  dressCodeIntro: "أناقة جزائرية",
+  dressCodeForHer: "قراقو تقليدي أو فستان سهرة أنيق.",
+  dressCodeForHim: "بدلة رسمية أو لباس تقليدي.",
   adultsOnlyEnabled: true,
 
-  groomFamilyLabel: "Groom's parents",
-  groomFamilyNames: "Mr. Karim & Mrs. Houda",
-  brideFamilyLabel: "Bride's parents",
-  brideFamilyNames: "Mr. Sami & Mrs. Rana",
+  groomFamilyLabel: "والدا العريس",
+  groomFamilyNames: "السيد كريم والسيدة هدى",
+  brideFamilyLabel: "والدا العروس",
+  brideFamilyNames: "السيد سامي والسيدة رنا",
 
-  contactButtonText: "Confirm by WhatsApp",
-  contactName: "Abu Ahmed",
+  contactButtonText: "تأكيد عبر واتساب",
+  contactName: "أبو أحمد",
   contactWhatsapp: "213700000000",
 
   programItems: [
-    { id: "d1", time: "7:00 PM", title: "Guest reception" },
-    { id: "d2", time: "8:00 PM", title: "Ceremony begins" },
-    { id: "d3", time: "9:00 PM", title: "Dinner" },
+    { id: "d1", time: "19:00", title: "استقبال الضيوف" },
+    { id: "d2", time: "19:30", title: "دخول العروسين" },
+    { id: "d3", time: "21:00", title: "العشاء" },
+    { id: "d4", time: "22:30", title: "الحفل والرقص" },
   ],
   storyMilestones: [
     {
       id: "s1",
       year: "2023",
-      title: "The first meeting",
-      description: "Fate brought us together for the first time.",
+      title: "أول لقاء",
+      description: "جمعنا القدر لأول مرة في جامعة الجزائر.",
     },
     {
       id: "s2",
-      year: "2026",
-      title: "The wedding",
-      description: "And now begins the most beautiful celebration.",
+      year: "2025",
+      title: "الخطوبة",
+      description: "بحضور العائلة والأحباب.",
+    },
+    {
+      id: "s3",
+      year: "2027",
+      title: "الزفاف",
+      description: "وتبدأ أجمل حكاية.",
     },
   ],
   notes: [
     {
       id: "n1",
-      text: "Please arrive half an hour before the ceremony begins.",
+      text: "نرجو الحضور قبل نصف ساعة من بدء المراسم.",
       isFeatured: false,
     },
   ],
@@ -127,13 +133,13 @@ const elegantDemoData: InvitationData = {
   wishes: [
     {
       id: "w1",
-      name: "Yacine",
-      message: "Congratulations, wishing you a lifetime of happiness.",
+      name: "ياسين",
+      message: "ألف مبروك، عقبال الفرح الدائم إن شاء الله.",
     },
     {
       id: "w2",
-      name: "Amina",
-      message: "May your union be blessed with love and joy.",
+      name: "أمينة",
+      message: "بارك الله لكما وبارك عليكما وجمع بينكما في خير.",
     },
   ],
   guestCounts: {
