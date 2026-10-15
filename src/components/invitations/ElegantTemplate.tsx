@@ -481,9 +481,15 @@ function Countdown({
    MAIN TEMPLATE
    ========================================================= */
 
-export default function ElegantTemplate({ invitation }: { invitation: InvitationData }) {
+export default function ElegantTemplate({
+  invitation,
+  previewMode = false,
+}: {
+  invitation: InvitationData;
+  previewMode?: boolean;
+}) {
   const reduced = useReducedMotion() ?? false;
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(previewMode);
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [activePhoto, setActivePhoto] = useState(0);
 

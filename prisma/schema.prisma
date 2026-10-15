@@ -85,8 +85,9 @@ model Order {
   editCodeUsedAt DateTime?
 
   draftData Json?
+  
+    editsRemaining Int @default(3)
 
-  publishesRemaining Int @default(3)
 
   invitationId String?     @unique
   invitation   Invitation? @relation(fields: [invitationId], references: [id])

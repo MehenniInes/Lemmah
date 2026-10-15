@@ -300,7 +300,7 @@ export default async function AdminOrdersPage({
                   <>
                     {" · "}
                     <span className="text-[#c6a15b]">
-                      publishes left: {o.publishesRemaining}
+                      publishes left: {o.editsRemaining}
                     </span>
                   </>
                 )}

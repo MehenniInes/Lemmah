@@ -31,7 +31,10 @@ export interface TemplateEntry {
   occasion: TemplateOccasion;
   description: string;
   previewImage: string;
-  Component: ComponentType<{ invitation: InvitationData }>;
+    Component: ComponentType<{
+    invitation: InvitationData;
+    previewMode?: boolean;
+  }>;
   demoData: InvitationData;
 }
 

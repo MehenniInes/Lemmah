@@ -42,7 +42,7 @@ CREATE TABLE "Order" (
     "editCodeHash" TEXT,
     "editCodeUsedAt" TIMESTAMP(3),
     "draftData" JSONB,
-    "publishesRemaining" INTEGER NOT NULL DEFAULT 3,
+    "editsRemaining" INTEGER NOT NULL DEFAULT 3,
     "invitationId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "paidAt" TIMESTAMP(3),
